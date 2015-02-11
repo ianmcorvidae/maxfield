@@ -50,79 +50,7 @@ import matplotlib.pyplot as plt
 # version number
 _V_ = '2.0.3'
 
-def main():
-    description=("Ingress Maxfield - Maximize the number of links "
-                 "and fields, and thus AP, for a collection of "
-                 "portals in the game Ingress.")
-    parser = argparse.ArgumentParser(description=description,
-                                     prog="makePlan.py")
-    parser.add_argument('-v','--version',action='version',
-                        version="Ingress Maxfield v{0}".format(_V_))
-    parser.add_argument('-g','--google',action='store_true',
-                        help='Make maps with google maps API. Default: False')
-    parser.add_argument('-a','--api_key',default=None,
-                        help='Google API key for Google maps. Default: None')
-    parser.add_argument('-n','--num_agents',type=int,default='1',
-                        help='Number of agents. Default: 1')
-    parser.add_argument('-s','--samples',type=int,default=50,
-                        help="Number of iterations to "
-                        "perform. More iterations may improve "
-                        "results, but will take longer to process. "
-                        "Default: 50. Max: 100 without --seriously")
-    parser.add_argument('-p', '--portals',type=int,default=50,
-                        help="Number of max portals to allow. "
-                        "Too many portals can be a resource issue. "
-                        "Default: 50. Max: 100 without --seriously")
-    parser.add_argument('--seriously',action='store_true')
-    parser.add_argument('input_file',
-                        help="Input semi-colon delimited portal file")
-    parser.add_argument('-d','--output_dir',default='',
-                        help="Directory for results. Default: "
-                        "this directory")
-    parser.add_argument('-f','--output_file',default='plan.pkl',
-                        help="Filename for pickle object. Default: "
-                        "plan.pkl")
-    args = vars(parser.parse_args())
-
-
-    GREEN = '#3BF256' # Actual faction text colors in the app
-    BLUE  = '#2ABBFF'
-    # Use google?
-    useGoogle = args['google']
-    api_key = args['api_key']
-
-    output_directory = args["output_dir"]
-    # add ending separator
-    if output_directory[-1] != os.sep:
-        output_directory += os.sep
-    # create directory if doesn't exist
-    if not os.path.isdir(output_directory):
-        os.mkdir(output_directory)
-    output_file = args["output_file"]
-    if output_file[-4:] != '.pkl':
-        output_file += ".pkl"
-
-    nagents = args["num_agents"]
-    if nagents < 0:
-        sys.exit("Number of agents should be positive")
-
-    # Number of iterations to complete since last improvement
-    EXTRA_SAMPLES = args["samples"]
-    if EXTRA_SAMPLES < 0:
-        sys.exit("Number of extra samples should be positive")
-    elif EXTRA_SAMPLES > 100 and not args["seriously"]:
-        sys.exit("Extra samples may not be more than 100. If you're really sure, add --seriously.")
-
-    # max portals allowed
-    MAX_PORTALS = args["portals"]
-    if MAX_PORTALS < 0:
-        sys.exit("Number of max portals should be positive")
-    elif MAX_PORTALS > 100 and not args["seriously"]:
-        sys.exit("Max portals may not be more than 100. If you're really sure, add --seriously.")
-
-    input_file = args['input_file']
-
-    if input_file[-3:] != 'pkl':
+def process_non_pickle(input_file, output_directory, MAX_PORTALS, EXTRA_SAMPLES):
         # If the input file is a portal list, let's set things up
         a = nx.DiGraph() # network tool
         locs = [] # portal coordinates
@@ -265,14 +193,87 @@ def main():
 
         agentOrder.improveEdgeOrder(a)
 
+        return a
+
+def main():
+    description=("Ingress Maxfield - Maximize the number of links "
+                 "and fields, and thus AP, for a collection of "
+                 "portals in the game Ingress.")
+    parser = argparse.ArgumentParser(description=description,
+                                     prog="makePlan.py")
+    parser.add_argument('-v','--version',action='version',
+                        version="Ingress Maxfield v{0}".format(_V_))
+    parser.add_argument('-g','--google',action='store_true',
+                        help='Make maps with google maps API. Default: False')
+    parser.add_argument('-a','--api_key',default=None,
+                        help='Google API key for Google maps. Default: None')
+    parser.add_argument('-n','--num_agents',type=int,default='1',
+                        help='Number of agents. Default: 1')
+    parser.add_argument('-s','--samples',type=int,default=50,
+                        help="Number of iterations to "
+                        "perform. More iterations may improve "
+                        "results, but will take longer to process. "
+                        "Default: 50. Max: 100 without --seriously")
+    parser.add_argument('-p', '--portals',type=int,default=50,
+                        help="Number of max portals to allow. "
+                        "Too many portals can be a resource issue. "
+                        "Default: 50. Max: 100 without --seriously")
+    parser.add_argument('--seriously',action='store_true')
+    parser.add_argument('input_file',
+                        help="Input semi-colon delimited portal file")
+    parser.add_argument('-d','--output_dir',default='',
+                        help="Directory for results. Default: "
+                        "this directory")
+    parser.add_argument('-f','--output_file',default='plan.pkl',
+                        help="Filename for pickle object. Default: "
+                        "plan.pkl")
+    args = vars(parser.parse_args())
+
+
+    GREEN = '#3BF256' # Actual faction text colors in the app
+    BLUE  = '#2ABBFF'
+    # Use google?
+    useGoogle = args['google']
+    api_key = args['api_key']
+
+    output_directory = args["output_dir"]
+    # add ending separator
+    if output_directory[-1] != os.sep:
+        output_directory += os.sep
+    # create directory if doesn't exist
+    if not os.path.isdir(output_directory):
+        os.mkdir(output_directory)
+    output_file = args["output_file"]
+    if output_file[-4:] != '.pkl':
+        output_file += ".pkl"
+
+    nagents = args["num_agents"]
+    if nagents < 0:
+        sys.exit("Number of agents should be positive")
+
+    # Number of iterations to complete since last improvement
+    EXTRA_SAMPLES = args["samples"]
+    if EXTRA_SAMPLES < 0:
+        sys.exit("Number of extra samples should be positive")
+    elif EXTRA_SAMPLES > 100 and not args["seriously"]:
+        sys.exit("Extra samples may not be more than 100. If you're really sure, add --seriously.")
+
+    # max portals allowed
+    MAX_PORTALS = args["portals"]
+    if MAX_PORTALS < 0:
+        sys.exit("Number of max portals should be positive")
+    elif MAX_PORTALS > 100 and not args["seriously"]:
+        sys.exit("Max portals may not be more than 100. If you're really sure, add --seriously.")
+
+    input_file = args['input_file']
+
+    if input_file[-3:] != 'pkl':
+        a = process_non_pickle(input_file, output_directory, MAX_PORTALS, EXTRA_SAMPLES)
         with open(output_directory+output_file,'w') as fout:
             pickle.dump(a,fout)
     else:
         with open(input_file,'r') as fin:
             a = pickle.load(fin)
-    #    agentOrder.improveEdgeOrder(a)
-    #    with open(output_directory+output_file,'w') as fout:
-    #        pickle.dump(a,fout)
 
     PP = PlanPrinterMap.PlanPrinter(a,output_directory,nagents,useGoogle=useGoogle,
                                     api_key=api_key)
@@ -295,6 +296,7 @@ def main():
     print "AP from link creation: {0}".format(link_ap)
     print "AP from field creation: {0}".format(field_ap)
     print "Total AP: {0}".format(portal_ap+link_ap+field_ap)
+
 
 if __name__ == "__main__":
     main()
