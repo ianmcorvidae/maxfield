@@ -48,9 +48,7 @@ import pickle
 import matplotlib.pyplot as plt
 
 # version number
-_V_ = '2.0.2'
-# max portals allowed
-_MAX_PORTALS_ = 50
+_V_ = '2.0.3'
 
 def main():
     description=("Ingress Maxfield - Maximize the number of links "
@@ -70,7 +68,12 @@ def main():
                         help="Number of iterations to "
                         "perform. More iterations may improve "
                         "results, but will take longer to process. "
-                        "Default: 50")
+                        "Default: 50. Max: 100 without --seriously")
+    parser.add_argument('-p', '--portals',type=int,default=50,
+                        help="Number of max portals to allow. "
+                        "Too many portals can be a resource issue. "
+                        "Default: 50. Max: 100 without --seriously")
+    parser.add_argument('--seriously',action='store_true')
     parser.add_argument('input_file',
                         help="Input semi-colon delimited portal file")
     parser.add_argument('-d','--output_dir',default='',
@@ -81,8 +84,6 @@ def main():
                         "plan.pkl")
     args = vars(parser.parse_args())
 
-    # Number of iterations to complete since last improvement
-    EXTRA_SAMPLES = args["samples"]
 
     GREEN = '#3BF256' # Actual faction text colors in the app
     BLUE  = '#2ABBFF'
@@ -105,11 +106,19 @@ def main():
     if nagents < 0:
         sys.exit("Number of agents should be positive")
 
+    # Number of iterations to complete since last improvement
     EXTRA_SAMPLES = args["samples"]
     if EXTRA_SAMPLES < 0:
         sys.exit("Number of extra samples should be positive")
-    elif EXTRA_SAMPLES > 100:
-        sys.exit("Extra samples may not be more than 100")
+    elif EXTRA_SAMPLES > 100 and not args["seriously"]:
+        sys.exit("Extra samples may not be more than 100. If you're really sure, add --seriously.")
+
+    # max portals allowed
+    MAX_PORTALS = args["portals"]
+    if MAX_PORTALS < 0:
+        sys.exit("Number of max portals should be positive")
+    elif MAX_PORTALS > 100 and not args["seriously"]:
+        sys.exit("Max portals may not be more than 100. If you're really sure, add --seriously.")
 
     input_file = args['input_file']
 
@@ -126,9 +135,9 @@ def main():
         print "Found {0} portals in portal list.".format(len(portals))
         if len(portals) < 3:
             sys.exit("Error: Must have more than 2 portals!")
-        if len(portals) > _MAX_PORTALS_:
+        if len(portals) > MAX_PORTALS:
             sys.exit("Error: Portal limit is {0}".\
-                     format(_MAX_PORTALS_))
+                     format(MAX_PORTALS))
         for num,portal in enumerate(portals):
             if len(portal) < 3:
                 print "Error! Portal ",portal[0]," has a formatting problem."
