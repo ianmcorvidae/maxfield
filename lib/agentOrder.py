@@ -165,7 +165,7 @@ def getAgentOrder(a,nagents,orderedEdges):
     '''
     geo = np.array([ a.node[i]['geo'] for i in xrange(a.order())])
     d = geometry.sphereDist(geo,geo)
-#    print d
+    # print d
     order = [e[0] for e in orderedEdges]
 
     # Reduce sequences of links made from same portal to single entry
@@ -257,7 +257,7 @@ def improveEdgeOrder(a):
         if len(a.edge[p][q]['fields']) > 0:
             continue
 
-#        print j,p,q,a.edge[p][q]['fields']
+        # print j,p,q,a.edge[p][q]['fields']
 
         origin = orderedEdges[j][0]
         # The first time this portal is used as an origin
@@ -266,7 +266,7 @@ def improveEdgeOrder(a):
             i+=1
 
         if i<j:
-#            print 'moving %s before %s'%(orderedEdges[j],orderedEdges[i])
+            # print 'moving %s before %s'%(orderedEdges[j],orderedEdges[i])
             # Move link j to be just before link i
             orderedEdges =  orderedEdges[   :i] +\
                            [orderedEdges[  j  ]]+\
@@ -274,16 +274,14 @@ def improveEdgeOrder(a):
                             orderedEdges[j+1: ]
         #TODO else: choose the closest earlier portal
     
-#    print 
     for i in xrange(m):
         p,q = orderedEdges[i]
-#        print p,q,a.edge[p][q]['fields']
+        # print p,q,a.edge[p][q]['fields']
         a.edge[p][q]['order'] = i
-#    print
 
 if __name__=='__main__':
     order = [0,5,5,5,2,2,1,0]
-#    order = [5]*5
+    # order = [5]*5
     s,mult = condenseOrder(order)
     print s
     print mult

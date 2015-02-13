@@ -50,10 +50,10 @@ class OTSPstate:
         # The index of the last visit this agent made
         lastvisit = self.lastat[-1][agent]
 
-#        print len(self.time)
-#        print self.d.shape
-#        print 'agent',agent
-#        print '  lastvisit',lastvisit
+        # print len(self.time)
+        # print self.d.shape
+        # print 'agent',agent
+        # print '  lastvisit',lastvisit
 
         # Assume agent's initial deployment is instantaneous
         if lastvisit == None:
@@ -66,13 +66,13 @@ class OTSPstate:
         # The node that needs to be visited next
         nextpos = self.order[self.m]
 
-#        print '  lastat',self.lastat
-#        print '  lastpos',lastpos
-#        print '  lasttime',lasttime
-#        print '  nextpos',nextpos
+        # print '  lastat',self.lastat
+        # print '  lastpos',lastpos
+        # print '  lasttime',lasttime
+        # print '  nextpos',nextpos
 
         t = max( self.time[-1] , lasttime + self.d[nextpos,lastpos] )
-#        print '  t',t
+        # print '  t',t
         return t
 
         # He makes it either at the same time as the previous visit or as soon as he arrives at nextpos
@@ -159,16 +159,16 @@ def getVisits(dists,order,nagents):
 
 if __name__=='__main__':
     import geometry
-#    pts = np.array([[0,0],\
-#                    [0,1],\
-#                    [0,5]])
-#    order = [0,2,1]
-#    pts = np.array([[0,0],\
-#                    [0,1],\
-#                    [0,2],\
-#                    [0,3],\
-#                    [0,5]])
-#    order = [0,4,1,2,3]
+    # pts = np.array([[0,0],\
+    #                 [0,1],\
+    #                 [0,5]])
+    # order = [0,2,1]
+    # pts = np.array([[0,0],\
+    #                 [0,1],\
+    #                 [0,2],\
+    #                 [0,3],\
+    #                 [0,5]])
+    # order = [0,4,1,2,3]
     pts = np.array([[0,0],\
                     [3,0],\
                     [4,0],\
@@ -178,7 +178,7 @@ if __name__=='__main__':
 
     d = geometry.planeDist(pts,pts)
 
-#    print getVisits(d,order,2)
+    # print getVisits(d,order,2)
 
     state = OTSPstate(d,order,2,visit2agent)
     print state.calcTimes()

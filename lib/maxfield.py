@@ -84,9 +84,9 @@ def flipSome(a):
                 flip(a,p,q,degrees,keylacks)
             if keylacks[q] <= 0:
                 break
-#        else:
+        # else:
             # This runs if the for loop exits without the break
-#            print 'Could not reduce IN-degree sufficiently for %s'%q
+            #print 'Could not reduce IN-degree sufficiently for %s'%q
 
 
 def removeSince(a,m,t):
@@ -95,8 +95,8 @@ def removeSince(a,m,t):
     for i in xrange(len(a.edgeStack) - m):
         p,q = a.edgeStack.pop()
         a.remove_edge(p,q)
-#        print 'removing',p,q
-#        print a.edgeStack
+        # print 'removing',p,q
+        # print a.edgeStack
     while len(a.triangulation) > t:
         a.triangulation.pop()
 

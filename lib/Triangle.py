@@ -11,15 +11,15 @@ def try_ordered_edge(a,p,q,reversible):
     if a.has_edge(p,q) or a.has_edge(q,p):
         return
 
-#    if reversible and a.out_degree(p) > a.out_degree(q):
-#        p,q = q,p
+    # if reversible and a.out_degree(p) > a.out_degree(q):
+    #     p,q = q,p
 
     if a.out_degree(p) >= 8:
         if not reversible:
-#            print '%s already has 8 outgoing'%p
+            # print '%s already has 8 outgoing'%p
             raise(Deadend('%s already has 8 outgoing'%p))
         if a.out_degree(q) >= 8:
-#            print '%s and %s already have 8 outgoing'%(p,q)
+            # print '%s and %s already have 8 outgoing'%(p,q)
             raise(Deadend('%s and %s already have 8 outgoing'%(p,q)))
         p,q = q,p
     
@@ -30,8 +30,8 @@ def try_ordered_edge(a,p,q,reversible):
         a.edgeStack.append( (p,q) )
     except AttributeError:
         a.edgeStack = [ (p,q) ]
-#    print 'adding',p,q
-#    print a.edgeStack
+        # print 'adding',p,q
+        # print a.edgeStack
 
 class Triangle:
     def __init__(self,verts,a,exterior=False):
@@ -116,16 +116,16 @@ class Triangle:
         return str([self.a.node[self.verts[i]]['name'] for i in range(3)])
 
     def buildFinal(self):
-#        print 'building final',self.tostr()
+        # print 'building final',self.tostr()
         if self.exterior:
             # Avoid making the final the link origin when possible
-#            print self.tostr(),'is exterior'
+            # print self.tostr(),'is exterior'
             try_ordered_edge(self.a,self.verts[1],\
                                self.verts[0],self.exterior)
             try_ordered_edge(self.a,self.verts[2],\
                                self.verts[0],self.exterior)
         else:
-#            print self.tostr(),'is NOT exterior'
+            # print self.tostr(),'is NOT exterior'
             try_ordered_edge(self.a,self.verts[0],\
                                self.verts[1],self.exterior)
             try_ordered_edge(self.a,self.verts[0],\
@@ -136,9 +136,9 @@ class Triangle:
                 self.children[i].buildFinal()
 
     def buildExceptFinal(self):
-#        print 'building EXCEPT final',self.tostr()
+        # print 'building EXCEPT final',self.tostr()
         if len(self.children) == 0:
-#            print 'no children'
+            # print 'no children'
             p,q = self.verts[2] , self.verts[1]
             try_ordered_edge(self.a,p,q,True)
             return
@@ -150,7 +150,7 @@ class Triangle:
             child.buildExceptFinal()
 
     def buildGraph(self):
-#        print 'building',self.tostr()
+        # print 'building',self.tostr()
         # A first generation triangle could have its final vertex's edges already completed by neighbors. This will cause the first generation to be completed when the opposite edge is added which complicates  completing inside descendents. This could be solved by choosing a new final vertex (or carefully choosing the order of completion of first generation triangles).
         if (                                                \
             self.a.has_edge(self.verts[0],self.verts[1]) or \
@@ -160,7 +160,7 @@ class Triangle:
             self.a.has_edge(self.verts[0],self.verts[2]) or \
             self.a.has_edge(self.verts[2],self.verts[0])    \
            ):
-#            print 'Final vertex completed!!!'
+            # print 'Final vertex completed!!!'
             raise Deadend('Final vertex completed by neighbors')
         self.buildExceptFinal()
         self.buildFinal()
