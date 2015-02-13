@@ -126,7 +126,9 @@ def triangulate(a,perim):
         startTriLen = 0
         a.triangulation = []
 
-    # Try all triangles using perim[0:2] and another perim node
+    # Try all triangles using perim[0:2] and another perim node.
+    # Since all perimeter nodes will always end up connected, this is
+    # sufficient randomness -- perim[0] and perim[1] will always be linked.
     for i in np.random.permutation(range(2,pn)):
 
         for j in xrange(TRIES_PER_TRI):
