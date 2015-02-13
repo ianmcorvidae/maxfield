@@ -218,7 +218,8 @@ def main():
                         help="Number of max portals to allow. "
                         "Too many portals can be a resource issue. "
                         "Default: 50. Max: 100 without --seriously")
-    parser.add_argument('--seriously',action='store_true')
+    parser.add_argument('--seriously',action='store_true',
+                        help="Allow any number of portals or samples to be configured.")
     parser.add_argument('input_file',
                         help="Input semi-colon delimited portal file")
     parser.add_argument('-d','--output_dir',default='',
