@@ -68,7 +68,8 @@ class PlanPrinter:
 
         self.names = np.array([a.node[i]['name'] for i in xrange(self.n)])
         # The alphabetical order
-        self.nameOrder = np.argsort(self.names)
+        makeLowerCase = np.vectorize(lambda s: s.lower())
+        self.nameOrder = np.argsort(makeLowerCase(self.names))
 
         self.xy = np.array([self.a.node[i]['xy'] for i in xrange(self.n)])
 
@@ -335,8 +336,8 @@ class PlanPrinter:
     def agentLinks(self):
         # Total distance traveled by each agent
         agentdists = np.zeros(self.nagents)
-        # Total experience for each agent
-        agentexps  = np.zeros(self.nagents,dtype=int)
+        agentlinkcount = [0]*self.nagents
+        agentfieldcount = [0]*self.nagents
 
         for i in range(self.nagents):
             movie = self.movements[i]
@@ -349,27 +350,33 @@ class PlanPrinter:
                 agentdists[i] += dist
                 curpos = newpos
 
-                agentexps[i] += 313 + 1250*len(self.a.edge[p][q]['fields'])
+                agentlinkcount[i] += 1
+                agentfieldcount[i] += len(self.a.edge[p][q]['fields'])
 
         # Different formatting for the agent's own links
         plainStr = '{0:4d}{1:1s} {2: 5d}{3:5d} {4:s}\n            {5:4d} {6:s}\n\n'
         hilitStr = '{0:4d}{1:1s} {2:_>5d}{3:5d} {4:s}\n            {5:4d} {6:s}\n\n'
 
+        totalTime = self.a.walktime+self.a.linktime+self.a.commtime
+
         csv_file = open(self.outputDir+'links_for_agents.csv','w')
         
         for agent in range(self.nagents):
+            agentAP = 313 * agentlinkcount[agent] + 1250*agentfieldcount[agent]
             with open(self.outputDir+'links_for_agent_%s_of_%s.txt'\
                     %(agent+1,self.nagents),'w') as fout:
 
                 fout.write('Complete link schedule issued to agent %s of %s\n'\
                     %(agent+1,self.nagents))
                 
-                totalTime = self.a.walktime+self.a.linktime+self.a.commtime
-
                 fout.write('\nTotal time estimate: %s minutes\n\n'%int(totalTime/60+.5))
 
-                fout.write('Agent distance:   %s m\n'%int(agentdists[agent]))
-                fout.write('Agent experience: %s AP\n'%(agentexps[agent]))
+                fout.write('----------- AGENT DATA -----------\n')
+                fout.write('Distance traveled: %s m\n'%int(agentdists[agent]))
+                fout.write('Links made:        %s\n'%(agentlinkcount[agent]))
+                fout.write('Fields completed:  %s\n'%(agentfieldcount[agent]))
+                fout.write('Total experience:  %s AP\n'%(agentAP))
+                fout.write('----------------------------------\n')
 
                 fout.write('\nLinks marked with * can be made EARLY\n')
 
